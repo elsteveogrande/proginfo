@@ -1,0 +1,10 @@
+-xc++
+-std=c++17
+-Wall
+-Wextra
+-Wpedantic
+-Wconversion
+-Wsign-conversion
+-Werror
+-Wno-main
+-Isrc
