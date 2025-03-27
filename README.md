@@ -1,12 +1,12 @@
 
-# libRuntimeDiagnostics, `librtd` for short
+# `proginfo`
 
-Simple, clean, portable library for runtime diagnostics.
+Simple, clean, portable library for performing runtime diagnostics on the current program.
 Requires no dependencies other than a C++ compiler supporting C++17.
 
-This aims to be fully C++17-compliant with little to no little `#if`-checking
-for doing different things on different platforms.  However this is only
-tested with Clang and LLVM at the moment (but `g++` is expected to also work).
+This aims to be fully C++17-compliant with little to no `#if`-checking
+(e.g. for platform-specific macros or different compilers).
+This is only tested with Clang and LLVM at the moment, but `g++` is expected to also work.
 
 * Supports OSX and Linux runtimes
 * Zero heap allocation, and otherwise minimal memory usage
@@ -16,24 +16,30 @@ tested with Clang and LLVM at the moment (but `g++` is expected to also work).
 In short, this aims to replicate some of GNU's [`libbacktrace`](https://github.com/ianlancetaylor/libbacktrace) and intends to provide support for runtime stack traces.  The hope is that this can be used for `libcxx`'s C++23 stacktrace support.  In the future this might support more, but the first milestone is to
 get stacktraces working for C++ in LLVM's C++ library.
 
-`librtd` includes these components:
+`proginfo` includes these components:
 
 ## Binary file support
 
-* `<librtd/binfile/ELF.h>`: an ELF parser and "navigator"
-* `<librtd/binfile/MachO.h>`: for Mach-O files
+Include `<proginfo/binary/Binary.h>` to get access to
+the current program's binary (or another binary or debug information file
+which was already `mmap`ped into process address space).
+This allows enumeration and inspection of the binary's segments (more generally, load commands),
+the binary's sections, and its symbol table.
+
+* `<proginfo/binary/detail/ELF(32|64).h>`: an ELF parser and "navigator"
+* `<proginfo/binary/detail/MachO(32|64).h>`: for Mach-O files
 
 ## Debug info
 
-* `<librtd/debug/DWARF.h>`: for [DWARF version 5](https://dwarfstd.org/doc/DWARF5.pdf) (currently latest) access
+* `<proginfo/debug/DWARF.h>`: for [DWARF version 5](https://dwarfstd.org/doc/DWARF5.pdf) (currently latest) access
 
 ## Inspecting the current process
 
-* `<librtd/procinfo/ProcInfo.h>`: for information about modules
+* `<proginfo/procinfo/ProcInfo.h>`: for information about modules
 (program images) in the current process, such as shared libraries
 and the current executable
-  - `<librtd/procinfo/OSX.h>` for OSX-specific impl
-  - `<librtd/procinfo/Linux.h>` for Linux-specific impl
+  - `<proginfo/procinfo/OSX.h>` for OSX-specific impl
+  - `<proginfo/procinfo/Linux.h>` for Linux-specific impl
   - (you don't need to include these specifically;
     `ProcInfo.h` does the right thing automatically for you)
 
@@ -53,7 +59,7 @@ There's no installation per se.
 Just include this project's headers, e.g.:
 
 ```
-clang++ -I/path/to/librtd/include
+clang++ -I/path/to/proginfo/include
 ```
 
 # Testing
@@ -77,6 +83,7 @@ great resources in learning all this stuff:
 * https://github.com/ianlancetaylor/libbacktrace
 * https://github.com/bombela/backward-cpp/blob/master/backward.hpp
 * https://github.com/aidansteele/osx-abi-macho-file-format-reference
+* https://github.com/JonathanSalwan/binary-samples
 
 ## Assorted references
 

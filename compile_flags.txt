@@ -8,3 +8,4 @@
 -Werror
 -Wno-main
 -Isrc
+-Wno-c++20-designator
