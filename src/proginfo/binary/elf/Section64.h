@@ -32,7 +32,7 @@ struct Section64 final : Section {
   util::Virtual<Segment> segment() const override;
 
   std::string_view name() const override {
-    auto elf64 = bin().asELF64();
+    auto& elf64 = bin().asELF64();
     auto names = elf64.sectionNames();
     auto index = nameIndex();
     auto ret = names.substr(index);

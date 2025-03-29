@@ -3,6 +3,7 @@ static_assert(__cplusplus >= 201700L, "proginfo requires C++17");
 
 #include "../elf/ELF32.h"
 #include "../elf/ELF64.h"
+#include "../macho/MachO64.h"
 #include "Binary.h"
 
 namespace proginfo::binary {
@@ -54,13 +55,15 @@ Binary::at(void const* ptr, size_t size, bool isLoaded, bool isAuxBinary) {
   util::Virtual<binary::Binary> ret;
   auto buf = (uint8_t*) ptr;
   if (!memcmp(buf, "\x7f\x45\x4c\x46", 4)) {
-    bool isLE = (buf[5] == 0x01);
-    util::Addr addr {ptr, size, isLE};
+    util::Addr addr {ptr, size};
     if (buf[4] == 0x02) {
       ret.emplace<binary::ELF64>(addr, isLoaded, isAuxBinary);
     } else if (buf[4] == 0x01) {
       ret.emplace<binary::ELF32>(addr, isLoaded, isAuxBinary);
     }
+  } else if (!memcmp(buf, "\xcf\xfa\xed\xfe", 4)) {
+    util::Addr addr {ptr, size};
+    ret.emplace<binary::MachO64>(addr, isLoaded, isAuxBinary);
   }
   return ret;
 }

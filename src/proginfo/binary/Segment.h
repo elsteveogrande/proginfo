@@ -22,8 +22,7 @@ public:
   virtual ~Segment() = default;
   Segment(Binary const* bin, util::Addr addr) : Bytes {addr}, bin_(bin) {}
 
-  Segment(Segment const&) = default;
-  Segment& operator=(Segment const&) = default;
+  bool isLE() const override final;
 
   virtual bool canWrite() const = 0;
   virtual bool canExecute() const = 0;

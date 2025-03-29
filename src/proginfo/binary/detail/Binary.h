@@ -33,8 +33,8 @@ public:
       , isLoaded_(isLoaded)
       , isAuxBinary_(isAuxBinary) {}
 
-  Binary(Binary const&) = default;
-  Binary& operator=(Binary const& rhs) = default;
+  Binary(Binary const&) = delete;
+  Binary& operator=(Binary const& rhs) = delete;
 
   ELF32 const& asELF32() const;
   ELF64 const& asELF64() const;
@@ -47,6 +47,7 @@ public:
   virtual bool isELF() const = 0;
   virtual bool isMachO() const = 0;
   virtual bool is64() const = 0;
+  virtual bool isFat() const = 0;
 
   virtual size_t entryOffset() const = 0;
 

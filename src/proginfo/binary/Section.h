@@ -24,8 +24,7 @@ public:
 
   Section(Binary const* bin, util::Addr addr) : util::Bytes {addr}, bin_(bin) {}
 
-  Section(Section const&) = default;
-  Section& operator=(Section const&) = default;
+  bool isLE() const override final;
 
   virtual bool canWrite() const = 0;
   virtual bool canExecute() const = 0;

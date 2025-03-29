@@ -10,7 +10,7 @@ static_assert(__cplusplus >= 201700L, "proginfo requires C++17");
 
 namespace proginfo::binary {
 
-struct Symbol64 : Symbol {
+struct Symbol64 final : Symbol {
   std::string_view strings_;
   bool const isLE_;
 
@@ -20,6 +20,8 @@ struct Symbol64 : Symbol {
       : Symbol(addr.trunc(symSize))
       , strings_(strings)
       , isLE_(isLE) {}
+
+  bool isLE() const override { return isLE_; }
 
   std::string_view name() const override {
     auto ret = strings_.substr(nameIndex());

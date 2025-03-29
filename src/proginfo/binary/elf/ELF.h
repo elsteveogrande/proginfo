@@ -22,8 +22,10 @@ protected:
 public:
   bool isELF() const override final { return true; }
   bool isMachO() const override final { return false; }
+  bool isFat() const override final { return false; }
 
   uint8_t endianByte() const { return u8(5); }
+  bool isLE() const override final { return endianByte() == 0x01; }
 
   bool isExecutable() const override {
     if (u16(0x10) == 0x0002) { return true; }

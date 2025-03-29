@@ -12,19 +12,16 @@ namespace proginfo::util {
 struct Addr final {
   std::byte const* ptr_ {};
   size_t const size_ {};
-  bool const isLE_ {};
 
   Addr() = default;
 
-  Addr(void const* ptr, size_t size, bool isLE)
-      : Addr((std::byte const*) ptr, size, isLE) {}
+  Addr(void const* ptr, size_t size) : Addr((std::byte const*) ptr, size) {}
 
-  Addr(std::byte const* ptr, size_t const size, bool isLE)
+  Addr(std::byte const* ptr, size_t size)
       : ptr_((std::byte const*) ptr)
-      , size_(size)
-      , isLE_(isLE) {}
+      , size_(size) {}
 
-  Addr(Addr const& rhs) : ptr_(rhs.ptr_), size_(rhs.size_), isLE_(rhs.isLE_) {}
+  Addr(Addr const& rhs) : ptr_(rhs.ptr_), size_(rhs.size_) {}
 
   Addr& operator=(Addr const& rhs) {
     new (this) Addr(rhs);
@@ -33,12 +30,12 @@ struct Addr final {
 
   Addr operator+(size_t offset) const {
     assert(offset <= size_);
-    return {ptr_ + offset, size_ - offset, isLE_};
+    return {ptr_ + offset, size_ - offset};
   }
 
   Addr trunc(size_t newSize) const {
     assert(newSize <= size_);
-    return {ptr_, newSize, isLE_};
+    return {ptr_, newSize};
   }
 
   std::string_view str() const { return {(char const*) ptr_, size_}; }
@@ -95,10 +92,6 @@ struct Addr final {
     a <<= 32;
     return a | b;
   }
-
-  uint16_t u16(size_t off) const { return isLE_ ? u16LE(off) : u16BE(off); }
-  uint32_t u32(size_t off) const { return isLE_ ? u32LE(off) : u32BE(off); }
-  uint64_t u64(size_t off) const { return isLE_ ? u64LE(off) : u64BE(off); }
 };
 
 struct Bytes {
@@ -108,20 +101,23 @@ struct Bytes {
   Bytes(Bytes const&) = default;
   Bytes(Bytes&&) = default;
 
-  Bytes& operator=(Bytes const& rhs) { return *new (this) Bytes(rhs); }
-
-  Bytes& operator=(Bytes&& rhs) {
-    if (&rhs != this) { new (this) Bytes(std::move(rhs)); }
-    return *this;
-  }
-
   Addr baseAddr() const { return addr_; }
-  bool isLE() const { return addr_.isLE_; }
+
+  virtual bool isLE() const = 0;
 
   uint8_t u8(size_t offset) const { return addr_.u8(offset); }
-  uint16_t u16(size_t offset) const { return addr_.u16(offset); }
-  uint32_t u32(size_t offset) const { return addr_.u32(offset); }
-  uint64_t u64(size_t offset) const { return addr_.u64(offset); }
+
+  uint16_t u16(size_t off) const {
+    return isLE() ? addr_.u16LE(off) : addr_.u16BE(off);
+  }
+
+  uint32_t u32(size_t off) const {
+    return isLE() ? addr_.u32LE(off) : addr_.u32BE(off);
+  }
+
+  uint64_t u64(size_t off) const {
+    return isLE() ? addr_.u64LE(off) : addr_.u64BE(off);
+  }
 };
 
 }  // namespace proginfo::util

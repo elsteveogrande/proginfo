@@ -11,7 +11,7 @@ static_assert(__cplusplus >= 201700L, "proginfo requires C++17");
 
 namespace proginfo::binary {
 
-struct Segment32 final : Segment {
+struct Segment32 : Segment {
   virtual ~Segment32() = default;
 
   Segment32(Binary const* bin, util::Addr addr) : Segment(bin, addr) {}
